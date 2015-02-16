@@ -32,4 +32,56 @@ p {
   margin-top: 10px;
 }
 
+.user_detail {
+  width: 800px;
+  border: solid 2px;
+  margin: 0 auto;
+}
+
+.user_detail > div {
+  margin-top: 10px;
+}
+
+.user_detail > h1 {
+  background-color: rgb(59, 32, 129);
+  font-weight: bold;
+  color: white;
+  padding: 1.2em;
+  text-align: center;
+}
+
+.user_detail > div > label {
+  display: block;
+  margin: 1.4em 0;
+  color: rgb(138, 114, 199);
+  font-weight: bold;
+  font-size: 1.5em;
+  /*border: solid;*/
+  /*border-bottom: 2px solid rgb(59, 32, 129);*/
+  padding-left: 10px;
+}
+
+.user_detail > div > label:nth-child(2n +1) {
+  /*color: rgb(138, 114, 199);*/
+  color: rgb(59, 32, 129);
+  font-weight: bold;
+  font-size: 1.5em;
+  /*border: solid;*/
+  border-bottom: 2px solid rgb(59, 32, 129);
+  padding-left: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

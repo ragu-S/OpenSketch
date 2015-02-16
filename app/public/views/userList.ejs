@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% include ./partials/head %>
+</head>
+<body>
+  <table id="user_list">
+    <tr>
+      <th>Name</th>
+      <th>Drawings</th>
+      <th>Entry 1</th>
+      <th>Entry 2</th>
+    </tr>
+    <% users.forEach(function(user) { %>
+    <tr>
+      <td><%= user.firstname + " " + user.lastname %></td>
+      <td><%= user.canvasModels %></td>
+      <td><%= user.userComplex.entry1 %></td>
+      <td><%= user.userComplex.entry2 %></td>
+    </tr>
+    <% }); %>
+  </table>
+</body>
+</html>

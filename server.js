@@ -2,7 +2,6 @@ var express = require("express");
 var app = express();
 var bodyParser = require('body-parser');
 
-//var passport = require();
 
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
@@ -20,6 +19,12 @@ require('./app/libs/database')();
 
 // Where actual routes are
 require('./app/routes')(app);
+
+// user routes
+
+// authentication/session routes
+
+// canvas routes
 
 // Set up tests
 //require('tests/assertions')();

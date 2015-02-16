@@ -7,13 +7,13 @@ module.exports = function(app) {
       next();
   };
 
-  // Database helper
-  var userDbHelper = require('./libs/createUserModel');
+  // Database Managers/Helpers
+  var userDbHelper = require('./libs/userManager');
 
   app.get('/', function(req, res, next) {
     console.log("home request received");
     //res.status(200).send("request received");
-    res.status(200).render('index.ejs');
+    res.render('index.ejs');
   });
 
   // Two ways of stacking middleware request handlers
@@ -26,23 +26,96 @@ module.exports = function(app) {
     next();
   }, function(req, res, next) {
 
-    res.status(200).send(req);
+    res.send(req);
   });
 
   app.get('/createUser', function(req, res, next) {
     console.log("user req received");
-    res.status(200).render('views/CreateUserForm.ejs');
+    res.render('views/CreateUserForm.ejs');
+  });
+
+  app.get('/listUsers', function(req, res, next) {
+    console.log("listing users");
+
+    //res.status(200).render('views/userList.ejs', {
+    userDbHelper.retrieveAll(next);
+  }, function(req, res, next) {
+
+    res.render('views/userList.ejs', {
+      users: userDbHelper.allUsers
+    });
   });
 
   app.post('/createUser', function(req, res, next) {
     console.log("user req received:", res.firstname);
     console.log("req", req.body.firstname);
 
-    userDbHelper.createUser(req.body.firstname, req.body.lastname);
+    var complexType = {
+      entry1: req.body.entry1,
+      entry2: req.body.entry2
+    };
+
+    userDbHelper.createUser(req.body.firstname, req.body.lastname, complexType);
 
     var message = "User:" + req.body.firstname + " created successfully";
-    res.status(200).send(message);
-    //res.status(200).render('views/CreateUserForm.ejs');
+
+    res.render('views/UserDetail.ejs', {
+      firstname: req.body.firstname,
+      lastname: req.body.lastname
+    });
+  });
+
+  /* Update routes */
+  app.get('/updateUser/:userId', function(req, res, next) {
+    console.log("update user: ", req.query.userId);
+    console.log("update user: ", req.params.userId);
+
+    res.send("User:" + req.query.id + " updated");
+  });
+
+  app.get('/updateUser', function(req, res, next) {
+    console.log("Get Request update user");
+
+    userDbHelper.retrieveUser(req, next);
+
+  }, function(req, res, next) {
+
+    res.render('views/updateUser.ejs', {
+      user: req.user
+    });
+  });
+
+  app.post('/updateUser', function(req, res, next) {
+    console.log("POST: update user: ", req.query.userId);
+    console.log("POST: update user: ", req.params.userId);
+
+    userDbHelper.updateUser(req, next);
+
+    res.send("User: updated");
+    // res.status(200).render('views/UserDetail.ejs', {
+    //   users: ""
+    // });
   });
 
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

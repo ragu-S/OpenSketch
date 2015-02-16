@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% include ./partials/head %>
+</head>
+<body>
+  <p> Update User </p>
+  <form id="CreateUser" action="updateUser" method="post">
+    <div>
+      <label>First Name:</label>
+      <input type="text" name="firstname" value="<%= user.firstname %>" />
+    </div>
+    <div>
+      <label>Last Name:</label>
+      <input type="text" name="lastname" value="<%= user.lastname %>" />
+    </div>
+    <div>
+      <label>Entry1:</label>
+      <input type="text" name="entry1" value="<%= user.userComplex.entry1 %>" />
+    </div>
+    <div>
+      <label>Entry2:</label>
+      <input type="text" name="entry2" value="<%= user.userComplex.entry2 %>" />
+    </div>
+    <input type="submit" />
+  </form>
+</body>
+</html>
+

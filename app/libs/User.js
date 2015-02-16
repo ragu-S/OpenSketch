@@ -4,8 +4,48 @@ var mongoose = require('mongoose');
 var userSchema = new mongoose.Schema({
   firstname: String,
   lastname: String,
-  canvasModels: { type: Object}
+  canvasModels: { type: Object},
+  userComplex: {
+    entry1: String,
+    entry2: String
+  }
 });
+
+userSchema.methods.updateUser = function(req, next) {
+  console.log("Updating user: " + req.body.firstname);
+
+  this.findById(1, function(err, user) {
+    if (err) throw err;
+
+    // change the users location
+    //user.location = 'uk';
+    console.log("User: ", user.firstname);
+    // save the user
+    // user.save(function(err) {
+    //   if (err) throw err;
+
+    //   console.log('User successfully updated!');
+    // });
+    next();
+  });
+
+  // this.firstname = updates.firstname;
+  // this.lastname = updates.lastname;
+  // this.userComplex = updates.userComplex;
+  // canvasModels = updates.canvasModels;
+
+  // this.save(function() {
+
+  // });
+};
+
+userSchema.methods.findUser = function(req, next) {
+  console.log("Calling findUser");
+
+};
+
+
+
 
 // Make User available to rest of the application
 module.exports = mongoose.model('User', userSchema);
