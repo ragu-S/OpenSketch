@@ -1,0 +1,35 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-size: 16px;
+}
+
+p {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: #666;
+  text-align: center;
+}
+
+#CreateUser {
+  width: 800px;
+  padding: 50px 20px;
+  border: solid 2px;
+  margin: 0 auto;
+}
+
+#CreateUser > div input, #CreateUser > div label {
+  display: inline-block;
+  font-size: 1.2em;
+  margin: 15px 0;
+}
+
+#CreateUser input:last-child {
+  font-size: 1.5em;
+  margin-top: 10px;
+}
+
+
