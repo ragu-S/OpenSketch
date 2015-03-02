@@ -12,6 +12,9 @@
       <th>Entry 2</th>
     </tr>
     <% users.forEach(function(user) { %>
+    <%  for(var property in user) {
+          user[property]  = user[property] || "";
+        } %>
     <tr>
       <td><%= user.firstname + " " + user.lastname %></td>
       <td><%= user.canvasModels %></td>

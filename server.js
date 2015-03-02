@@ -19,7 +19,7 @@ require('./app/libs/database')();
 
 // Where actual routes are
 require('./app/routes')(app);
-
+require('./app/routeHandlers/userRoutes')(app);
 // user routes
 
 // authentication/session routes
