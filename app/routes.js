@@ -14,6 +14,7 @@ module.exports = function(app) {
     console.log("home request received");
     //res.status(200).send("request received");
     res.render('index.ejs');
+    //res.sendFile("/app/public/views/OpenSketch.html");
   });
 
   // Two ways of stacking middleware request handlers
@@ -28,6 +29,8 @@ module.exports = function(app) {
 
     res.send(req);
   });
+
+  //app.sendFile();
 
 };
 

@@ -1,7 +1,8 @@
 var express = require("express");
 var app = express();
 var bodyParser = require('body-parser');
-
+var http = require('http').Server(app); // create Http server
+var io = require('socket.io')(http); // add socket io instance
 
 app.use(bodyParser.json());
 app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
@@ -24,16 +25,21 @@ require('./app/routeHandlers/userRoutes')(app);
 
 // authentication/session routes
 
-// canvas routes
+// canvas session routes
+require('./app/routeHandlers/canvasSessionRoutes')(app);
+
+// Set up Socket Listeners
+require('./app/socketHandlers/socket')(io);
 
 // Set up tests
 //require('tests/assertions')();
 
 
 // Start node app
-app.listen(port);
-
-console.log("Server running on port " + port);
+//app.listen(port);
+http.listen(port, function() {
+  console.log("Server running on port " + port);
+});
 
 exports = module.exports = app;
 

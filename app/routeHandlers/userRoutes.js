@@ -4,7 +4,9 @@ module.exports = function(app) {
 
   app.get('/createUser', function(req, res, next) {
     console.log("user req received");
+
     res.render('views/CreateUserForm.ejs');
+    //res.render('views/OpenSketch.ejs');
   });
 
   app.get('/listUsers', function(req, res, next) {
@@ -28,7 +30,7 @@ module.exports = function(app) {
       entry2: req.body.entry2
     };
 
-    userDbHelper.createUser(req.body.firstname, req.body.lastname, complexType);
+    userDbHelper.createUser(req, next);
 
     var message = "User:" + req.body.firstname + " created successfully";
 
@@ -39,6 +41,7 @@ module.exports = function(app) {
   });
 
   /* Update routes */
+
   app.get('/updateUser/:userId', function(req, res, next) {
     console.log("update user: ", req.query.userId);
     console.log("update user: ", req.params.userId);
@@ -46,6 +49,7 @@ module.exports = function(app) {
     res.send("User:" + req.query.id + " updated");
   });
 
+  // Edit View
   app.get('/updateUser', function(req, res, next) {
     console.log("Get Request update user");
 
