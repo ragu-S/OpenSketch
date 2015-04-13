@@ -8,6 +8,7 @@
   var socket = io();
   var movingSelf = false;
   var SocketObject = {};
+  var userSessionId = 0;
 
   window.onload = function() {
 
@@ -29,41 +30,36 @@
 
   function initUserSession() {
     console.log("Initiating session");
-    //sessionStorage.clear();
-    var userSessionKey = sessionStorage.getItem('OpenSketchUserSessionKey');
+    // blur screen while we check whether user had logged in before or if session
+    // needs to be created
+
+    // sessionStorage.clear();
+    //var userSessionKey = sessionStorage.getItem('OpenSketchUserSessionKey');
+
     // Init Socket IO instance
 
+    var sessionVerification = function() {
 
-    if(userSessionKey) {
-      // Check key for date object, and check if it has not expired
-      console.log("Session key exists", userSessionKey);
-      var curDate = new Date();
+    };
 
-      var diff = ((curDate - userSessionKey.dateLastLoggedIn) / 1000) / 60;
-      console.log("Time diff from last loggin is ", diff);
+    var Session = {
+      userId: "",
+      sessionKey: "",
+      sessionDate: new Date()
+    };
 
-      socket.emit('old Session Key', "session");
-    }
-    else {
-      console.log("Adding session key");
-      userSessionKey = document.getElementById('username');
-      userSessionKey = userSessionKey.value || "default";
-
-      socket.emit('new Session Key', userSessionKey);
-    }
-
-    console.log("Session added");
+    //console.log("Session added");
     //socket.emit('new Session Key', userSessionKey);
 
-    socket.on('connect To Session', function(sessionId) {
-      // Create a new Session key using Socket Id
-      session = {
-        sessionId: sessionId,
-        dateLastLoggedIn: new Date()
-      };
+    // socket.on('connect To Session', function(sessionId) {
+    //   // Create a new Session key using Socket Id
+    //   session = {
+    //     sessionId: sessionId,
+    //     dateLastLoggedIn: new Date()
+    //   };
 
-      sessionStorage.setItem('OpenSketchUserSessionKey', session);
-    });
+    //   sessionStorage.setItem('OpenSketchUserSessionKey', session);
+    // });
 
   }
 
@@ -72,9 +68,9 @@
     stage = new PIXI.Stage(0x3da8bb);
 
     var rendererOptions = {
-      antialiasing:false,
-      transparent:false,
-      resolution:1
+      antialiasing: false,
+      transparent: false,
+      resolution: 1
     };
 
     // create a renderer instance
@@ -149,10 +145,48 @@
     socket.emit('emit drawingCanvasObject', objectInfo);
   };
 
+  SocketObject.emitObjectMoveDone = function(objectInfo) {
+    socket.emit('emit objectMoveDone', objectInfo);
+  };
+
+  SocketObject.emitObjectAddDone = function(objectInfo) {
+    var shape = {
+      userId: userSessionId,
+      objectType: objectInfo.objectType,
+      position: objectInfo.startCoords,
+      rotation: 0,
+      fillColor: {
+        hexCode: objectInfo.color,
+        rgba: objectInfo.color
+      }
+    };
+
+    switch(objectInfo.objectType) {
+      case 'rectangle':
+        shape.layerLevel = objectInfo.stageIndex;
+        shape.width = objectInfo.dimensions.width;
+        shape.height = objectInfo.dimensions.height;
+        shape.borderStyle = {
+          width: 2,
+          color: objectInfo.color
+        };
+      break;
+
+      case 'drawObject':
+        shape.vectors = objectInfo.vectors;
+        shape.strokeWidth = objectInfo.dimensions.width;
+        shape.layerLevel = objectInfo.layerLevel;
+      break;
+    }
+
+    socket.emit('emit objectAddDone', shape);
+  };
+
   socket.on('recieve moveCanvasObject', function(moveObjectInfo) {
     //stage.removeChildAt(objectInfo.stageIndex);
     //console.log("object moving", movingSelf);
     console.log(stage.children.length);
+
     if(movingSelf) {
       return;
     }
@@ -208,7 +242,29 @@
       objectInfo.color,
       objectInfo.stageIndex + 1
     );
+  });
 
+  socket.on('get SessionKey', function(session) {
+
+    var userSessionKey = sessionStorage.getItem('OpenSketchUserSessionKey');
+
+    if(userSessionKey) {
+      // Check key for date object, and check if it has not expired
+      console.log("Old Session key exists", userSessionKey);
+      //var curDate = new Date();
+      userSessionId = session.sessionId;
+      //var diff = ((curDate - userSessionKey.dateLastLoggedIn) / 1000) / 60;
+      //console.log("Time diff from last loggin is ", diff);
+      socket.emit('old Session Key', userSessionKey);
+    }
+    else {
+      console.log("New session key exists");
+      sessionStorage.setItem('OpenSketchUserSessionKey', session);
+      userSessionId = session.sessionId;
+      socket.emit('new Session Key', 101);
+    }
+
+    console.log("Getting key at ", session);
   });
 
   function drawRect() {
@@ -301,8 +357,8 @@
       //console.log(finalGraphics);
 
       myRenderer.render(stage);
+      SocketObject.emitObjectAddDone(finalGraphics);
     };
-
   }
 
   var Rectangle = function () {
@@ -339,12 +395,27 @@
     // objectInfo.stageIndex
 
     return {
+      //userId: userSessionId,
       objectType: 'rectangle',
       startCoords: startCoords,
       dimensions: dimensions,
       color: color,
       stageIndex: curStageIndex  + 1
     };
+
+    // var shape = {
+    //   userId: Number,
+    //   layerLevel: Number,
+    //   position: {
+    //     x: Number,
+    //     y: Number
+    //   },
+    //   rotation: Number,
+    //   fillColor: {
+    //     hexCode: String,
+    //     rgba: String
+    //   }
+    // };
   };
 
   function addRect() {
@@ -375,7 +446,7 @@
 
     // stage.addChild(graphics);
 
-    //myRenderer.render(stage);
+    // myRenderer.render(stage);
   }
 
   function addCiricle() {
@@ -464,6 +535,21 @@
       }
 
       var graphics = new PIXI.Graphics().lineStyle(2, 0xFF0000);
+      var pencilObject = {
+        _id: CanvasObjects.length + 1,
+        objectType: 'drawObject',
+        startCoords: {
+          x: path[0],
+          y: path[1]
+        },
+        vectors: path,
+        dimensions: {
+          width: 2,
+          height: 0
+        },
+        color: 0xFF0000,
+        layerLevel: stage.children.length + 1
+      };
 
       graphics.drawPolygon(path);
 
@@ -475,13 +561,11 @@
 
       stage.addChild(graphics);
 
-      CanvasObjects.push({
-        _id: CanvasObjects.length + 1,
-        type: 'pencil',
-        coords: path
-      });
+      CanvasObjects.push(pencilObject);
 
       myRenderer.render(stage);
+
+      SocketObject.emitObjectAddDone(pencilObject);
     };
   }
 
@@ -551,6 +635,8 @@
       this.data = null;
       movingSelf = false;
       myRenderer.render(stage);
+
+      SocketObject.emitObjectMoveDone(stage.getChildIndex(this));
     };
   }
 })();

@@ -40,7 +40,6 @@ userSchema.methods.updateUser = function(req, next) {
 
 userSchema.methods.findUser = function(req, next) {
   console.log("Calling findUser");
-
 };
 
 // Make User available to rest of the application

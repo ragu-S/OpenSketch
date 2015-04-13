@@ -4,10 +4,21 @@ module.exports = function(app) {
   var canvasSessionHelper = require('../libs/canvasSessionManager');
   var sessions = [];
 
-  app.get('/createSession', function(req, res) {
+  app.get('/createSession', function(req, res, next) {
     // Check if socket is running, else start socket again
     //if(!io) return;
-    res.render('views/CreateUserForm.ejs');
+    //res.render('views/CreateUserForm.ejs');
+    // if(!req.session.openSketchSessions) {
+    //   req.session.openSketchSessions = [{
+    //     sessionKey: 101
+    //   }];
+    // }
+    // else {
+    //   // ensure session is valid
+
+    // }
+    res.render('views/OpenSketch.ejs');
+
     // Create a new session
     //
   });
@@ -15,9 +26,6 @@ module.exports = function(app) {
   app.post('/createSession', function(req, res, next) {
     if(req.body.username) {
       res.render('views/OpenSketch.ejs', { username: req.body.username });
-    }
-    else {
-      res.render('views/CreateUserForm.ejs');
     }
   });
 
@@ -29,10 +37,7 @@ module.exports = function(app) {
 
   app.get('/session:sessionId', function(req, res, next) {
     console.log("session with Id req received");
-
     //res.render('views/CreateUserForm.ejs');
     res.render('views/OpenSketch.ejs');
   });
-
-
 };
